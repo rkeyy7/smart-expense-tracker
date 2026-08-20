@@ -10,7 +10,7 @@ CORS(app, supports_credentials=True)
 
 # --- CONFIGURACIÓN BLINDADA DE CORS ---
 # 'headers' debe incluir explícitamente 'Authorization'
-CORS(app, resources={r"/*": {"origins": "*"}}, headers=['Content-Type', 'Authorization'], supports_credentials=True)
+CORS(app, resources={r"/*": {"origins": "*"}}, headers=['Content-Type', 'Authorization'], expose_headers=['Content-Disposition'], supports_credentials=True)
 
 app.config["JWT_SECRET_KEY"] = "rkeyy7"
 jwt = JWTManager(app)

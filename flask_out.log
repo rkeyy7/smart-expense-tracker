@@ -1,0 +1,30 @@
+
+--- RUTAS ACTIVAS ---
+static: /static/<path:filename>
+register: /register
+login: /login
+obtener_transacciones: /transacciones
+crear_transaccion: /transacciones
+eliminar_transaccion: /transacciones/<int:id>
+actualizar_transaccion: /transacciones/<int:id>
+get_gastos_por_categoria: /api/gastos-por-categoria
+get_ingresos_por_categoria: /api/ingresos-por-categoria
+descargar_reporte_pdf: /api/reportes/pdf
+---------------------
+
+ * Serving Flask app 'app'
+ * Debug mode: on
+
+--- RUTAS ACTIVAS ---
+static: /static/<path:filename>
+register: /register
+login: /login
+obtener_transacciones: /transacciones
+crear_transaccion: /transacciones
+eliminar_transaccion: /transacciones/<int:id>
+actualizar_transaccion: /transacciones/<int:id>
+get_gastos_por_categoria: /api/gastos-por-categoria
+get_ingresos_por_categoria: /api/ingresos-por-categoria
+descargar_reporte_pdf: /api/reportes/pdf
+---------------------
+

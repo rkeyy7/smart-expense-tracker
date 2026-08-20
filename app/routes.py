@@ -1,6 +1,8 @@
-from flask import request, jsonify
+from flask import request, jsonify, send_file
+from io import BytesIO
 from . import app, db 
 from .models import Transaccion, User
+from .reportes import generar_pdf
 from datetime import datetime, timedelta
 from flask_jwt_extended import jwt_required, get_jwt_identity, create_access_token
 
@@ -115,6 +117,45 @@ def get_ingresos_por_categoria():
         .filter(Transaccion.user_id == user_id, Transaccion.tipo == 'ingreso')\
         .group_by(Transaccion.categoria).all()
     return jsonify([{"name": r[0], "value": float(r[1])} for r in resultados]), 200
+
+@app.route('/api/reportes/pdf', methods=['GET'])
+@jwt_required()
+def descargar_reporte_pdf():
+    user_id = get_jwt_identity()
+    usuario = db.session.get(User, int(user_id))
+
+    fecha_inicio = request.args.get('fecha_inicio')
+    fecha_fin = request.args.get('fecha_fin')
+
+    try:
+        inicio = datetime.strptime(fecha_inicio, '%Y-%m-%d') if fecha_inicio else None
+        fin = datetime.strptime(fecha_fin, '%Y-%m-%d') if fecha_fin else None
+    except ValueError:
+        return jsonify({"message": "Formato de fecha inválido. Use YYYY-MM-DD"}), 400
+
+    query = Transaccion.query.filter_by(user_id=user_id)
+    if inicio:
+        query = query.filter(Transaccion.fecha >= inicio)
+    if fin:
+        limite = fin + timedelta(days=1)
+        query = query.filter(Transaccion.fecha < limite)
+
+    transacciones = query.order_by(Transaccion.fecha.desc()).all()
+
+    pdf_bytes = generar_pdf(
+        usuario.email if usuario else "Usuario",
+        transacciones,
+        inicio,
+        fin,
+    )
+
+    nombre_archivo = f"reporte_{datetime.now().strftime('%Y%m%d_%H%M')}.pdf"
+    return send_file(
+        BytesIO(pdf_bytes),
+        mimetype='application/pdf',
+        as_attachment=True,
+        download_name=nombre_archivo,
+    )
 
 # Verificador para consola
 print("\n--- RUTAS ACTIVAS ---")
