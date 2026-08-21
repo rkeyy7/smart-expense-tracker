@@ -1,4 +1,3 @@
-# __init__.py
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
@@ -6,13 +5,13 @@ from flask_jwt_extended import JWTManager
 import os
 
 app = Flask(__name__)
-CORS(app, supports_credentials=True)
 
-# --- CONFIGURACIÓN BLINDADA DE CORS ---
-# 'headers' debe incluir explícitamente 'Authorization'
-CORS(app, resources={r"/*": {"origins": "*"}}, headers=['Content-Type', 'Authorization'], expose_headers=['Content-Disposition'], supports_credentials=True)
+# --- CONFIGURACIÓN DE CORS LIMPIA Y CORRECTA ---
+# Una sola llamada, permitiendo a Vercel conectarse sin conflictos de seguridad
+CORS(app, resources={r"/*": {"origins": "*"}})
 
-app.config["JWT_SECRET_KEY"] = "rkeyy7"
+# Leemos la clave desde Render, o usamos la tuya por defecto
+app.config["JWT_SECRET_KEY"] = os.getenv("JWT_SECRET_KEY", "rkeyy7")
 jwt = JWTManager(app)
 
 app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL', 'postgresql://postgres:rkeyy7@localhost:5432/smart_expense_db')
