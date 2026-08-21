@@ -21,3 +21,12 @@ db = SQLAlchemy(app)
 
 # Importamos las rutas al final para evitar circular imports
 from app import routes
+
+# --- NUEVO: Importamos los modelos y creamos las tablas ---
+from app import models
+
+# Le decimos a Flask que cree todas las tablas en la base de datos
+with app.app_context():
+    db.create_all()
+
+    
